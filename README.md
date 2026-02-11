@@ -16,6 +16,16 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+### 从外网访问（内网穿透）
+
+若需要临时从互联网访问本机服务，可在**另一个终端**运行：
+
+```bash
+npx localtunnel --port 3000
+```
+
+终端会输出一个 `https://xxx.loca.lt` 链接，用浏览器打开即可。更多方式见 [docs/内网穿透.md](docs/内网穿透.md)。
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

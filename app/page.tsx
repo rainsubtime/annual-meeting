@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import {
   Button,
   Input,
@@ -25,371 +26,314 @@ import {
   DropdownSeparator,
   DropdownLabel,
 } from '@/components/ui';
+import { homeData } from '@/lib/data';
 
-function ComponentShowcase() {
+const sizeMap = { 'Small': 'sm', 'Medium': 'md', 'Large': 'lg', 'Extra Large': 'xl' } as const;
+const variantMap = { Primary: 'primary', Secondary: 'secondary', Outline: 'outline', Ghost: 'ghost', Danger: 'danger', Default: 'default', Success: 'success', Warning: 'warning', Error: 'error', Info: 'info' } as const;
+
+function PageHeader() {
+  const { header } = homeData;
+  return (
+    <div className="text-center space-y-6 animate-bounce-in">
+      <h1 className="text-6xl md:text-7xl font-black uppercase transform -rotate-2 leading-tight">
+        <span className="inline-block bg-[var(--primary)] text-white px-6 py-3 rounded-[var(--radius-lg)] border-[var(--border-width)] border-[var(--foreground)] shadow-[var(--shadow-lg)] transform rotate-2">
+          {header.titlePrimary}
+        </span>
+        <br />
+        <span className="inline-block bg-[var(--secondary)] text-[var(--foreground)] px-6 py-3 rounded-[var(--radius-lg)] border-[var(--border-width)] border-[var(--foreground)] shadow-[var(--shadow-lg)] transform -rotate-1 mt-4">
+          {header.titleSecondary}
+        </span>
+      </h1>
+      <p className="text-2xl font-bold text-[var(--foreground)] transform rotate-1">
+        {header.subtitle}
+      </p>
+      <div className="flex gap-3 justify-center flex-wrap items-center">
+        <Link href={header.nav.href}>
+          <Button variant="primary" size="lg">{header.nav.label}</Button>
+        </Link>
+        {header.badges.map((b) => (
+          <Badge key={b.label} variant={variantMap[b.variant as keyof typeof variantMap] ?? 'default'} size={b.size as 'sm' | 'md' | 'lg'} dot={b.dot}>
+            {b.label}
+          </Badge>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ButtonsSection() {
+  const { buttons } = homeData.sections;
+  return (
+    <Card hover>
+      <CardHeader title={buttons.title} subtitle={buttons.subtitle} />
+      <CardBody>
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-[var(--neutral-500)] uppercase">{buttons.variants.label}</h3>
+            <div className="flex flex-wrap gap-3">
+              {buttons.variants.items.map((v) => (
+                <Button key={v} variant={variantMap[v as keyof typeof variantMap] ?? 'primary'}>{v}</Button>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-[var(--neutral-500)] uppercase">{buttons.sizes.label}</h3>
+            <div className="flex flex-wrap items-center gap-3">
+              {buttons.sizes.items.map((s) => (
+                <Button key={s} size={sizeMap[s as keyof typeof sizeMap] ?? 'md'}>{s}</Button>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-[var(--neutral-500)] uppercase">{buttons.states.label}</h3>
+            <div className="flex flex-wrap gap-3">
+              <Button loading>{buttons.states.loading}</Button>
+              <Button disabled>{buttons.states.disabled}</Button>
+              <Button leftIcon={<PlusIcon />}>{buttons.states.withIcon}</Button>
+            </div>
+          </div>
+        </div>
+      </CardBody>
+    </Card>
+  );
+}
+
+function PlusIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+      <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+    </svg>
+  );
+}
+
+function InputsSection() {
+  const { inputs } = homeData.sections;
+  return (
+    <Card hover>
+      <CardHeader title={inputs.title} subtitle={inputs.subtitle} />
+      <CardBody>
+        <div className="space-y-4">
+          {inputs.fields.map((f) => (
+            f.type === 'email' ? (
+              <Input
+                key={f.label}
+                label={f.label}
+                type="email"
+                placeholder={f.placeholder}
+                status={f.status as 'success' | undefined}
+                leftIcon={<EmailIcon />}
+              />
+            ) : 'rows' in f && f.rows ? (
+              <Textarea
+                key={f.label}
+                label={f.label}
+                placeholder={f.placeholder}
+                hint={f.hint}
+                rows={f.rows}
+              />
+            ) : (
+              <Input
+                key={f.label}
+                label={f.label}
+                type={f.type ?? 'text'}
+                placeholder={f.placeholder}
+                hint={f.hint}
+                error={f.error}
+              />
+            )
+          ))}
+        </div>
+      </CardBody>
+    </Card>
+  );
+}
+
+function EmailIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+      <path d="M3 4a2 2 0 00-2 2v1.161l8.441 4.221a1.25 1.25 0 001.118 0L19 7.162V6a2 2 0 00-2-2H3z" />
+      <path d="M19 8.839l-7.77 3.885a2.75 2.75 0 01-2.46 0L1 8.839V14a2 2 0 002 2h14a2 2 0 002-2V8.839z" />
+    </svg>
+  );
+}
+
+function BadgesSection() {
+  const { badges } = homeData.sections;
+  return (
+    <Card hover>
+      <CardHeader title={badges.title} subtitle={badges.subtitle} />
+      <CardBody>
+        <div className="space-y-4">
+          <div className="flex flex-wrap gap-2">
+            {badges.variants.map((v) => (
+              <Badge key={v} variant={variantMap[v as keyof typeof variantMap] ?? 'default'}>{v}</Badge>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {badges.extras.map((e) => (
+              <Badge key={e.label} variant={variantMap[e.variant as keyof typeof variantMap] ?? 'primary'} rounded={e.rounded} dot={e.dot} removable={e.removable} onRemove={e.removable ? () => {} : undefined}>{e.label}</Badge>
+            ))}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {badges.sizes.map((s) => (
+              <Badge key={s} size={sizeMap[s as keyof typeof sizeMap] ?? 'md'}>{s}</Badge>
+            ))}
+          </div>
+        </div>
+      </CardBody>
+    </Card>
+  );
+}
+
+function CardsSection() {
+  const { cards } = homeData.sections;
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {cards.items.map((item) => (
+        <Card key={item.title} hover bordered shadowed padding={item.padding === 'lg' ? 'lg' : 'md'}>
+          {item.padding !== 'lg' && (
+            <CardHeader
+              title={item.title}
+              action={item.actionLabel ? <Button size="sm" variant="secondary">{item.actionLabel}</Button> : undefined}
+            />
+          )}
+          <CardBody>
+            {item.padding === 'lg' ? (
+              <>
+                <h3 className="text-lg font-extrabold mb-2 uppercase">{item.title}</h3>
+                <p className="text-[var(--neutral-600)] font-semibold">{item.body}</p>
+              </>
+            ) : (
+              item.body && <p className="text-[var(--neutral-600)] font-semibold">{item.body}</p>
+            )}
+          </CardBody>
+          {item.footer && (
+            <CardFooter>
+              <Button size="sm" variant="outline">{item.footer.cancel}</Button>
+              <Button size="sm">{item.footer.submit}</Button>
+            </CardFooter>
+          )}
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+function TabsSection() {
+  const { tabs } = homeData.sections;
+  return (
+    <Card hover>
+      <CardHeader title={tabs.title} subtitle={tabs.subtitle} />
+      <CardBody>
+        <Tabs defaultValue={tabs.line.tabs[0].value}>
+          <TabsList>
+            {tabs.line.tabs.map((t) => <TabsTrigger key={t.value} value={t.value}>{t.label}</TabsTrigger>)}
+          </TabsList>
+          {tabs.line.tabs.map((t) => (
+            <TabsContent key={t.value} value={t.value}>
+              <p className="text-[var(--neutral-600)] font-semibold text-lg">{t.content}</p>
+            </TabsContent>
+          ))}
+        </Tabs>
+        <div className="mt-8">
+          <h4 className="text-sm font-black mb-4 uppercase tracking-wide">{tabs.pills.label}</h4>
+          <Tabs defaultValue={tabs.pills.tabs[0].value} variant="pills">
+            <TabsList>
+              {tabs.pills.tabs.map((t) => <TabsTrigger key={t.value} value={t.value}>{t.label}</TabsTrigger>)}
+            </TabsList>
+            {tabs.pills.tabs.map((t) => (
+              <TabsContent key={t.value} value={t.value}>
+                <p className="font-semibold">{t.content}</p>
+              </TabsContent>
+            ))}
+          </Tabs>
+        </div>
+      </CardBody>
+    </Card>
+  );
+}
+
+function InteractiveSection() {
   const { addToast } = useToast();
   const [modalOpen, setModalOpen] = useState(false);
+  const { interactive } = homeData.sections;
+  const m = homeData.sections.modal;
+  return (
+    <>
+      <Card hover>
+        <CardHeader title={interactive.title} subtitle={interactive.subtitle} />
+        <CardBody>
+          <div className="flex flex-wrap gap-4">
+            <Button onClick={() => setModalOpen(true)}>{interactive.modalTrigger}</Button>
+            {interactive.toasts.map((t) => (
+              <Button
+                key={t.button}
+                variant={t.status === 'success' ? 'secondary' : t.status === 'warning' ? 'outline' : 'danger'}
+                onClick={() => addToast({ title: t.title, description: t.description, status: t.status as 'success' | 'warning' | 'error' })}
+              >
+                {t.button}
+              </Button>
+            ))}
+            <Dropdown
+              trigger={
+                <Button variant="ghost" rightIcon={<ChevronDownIcon />}>
+                  {interactive.dropdown.trigger}
+                </Button>
+              }
+            >
+              <DropdownLabel>{interactive.dropdown.label}</DropdownLabel>
+              {interactive.dropdown.items.slice(0, -1).map((item) => (
+                <DropdownItem
+                  key={item.label}
+                  icon={item.icon ? <PlusIcon /> : undefined}
+                  onClick={() => {}}
+                >
+                  {item.label}
+                </DropdownItem>
+              ))}
+              <DropdownSeparator />
+              <DropdownItem destructive onClick={() => {}}>
+                {interactive.dropdown.items[interactive.dropdown.items.length - 1].label}
+              </DropdownItem>
+            </Dropdown>
+          </div>
+        </CardBody>
+      </Card>
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} size="lg">
+        <ModalHeader title={m.title} />
+        <ModalBody>
+          <p className="text-[var(--neutral-600)] mb-6 font-semibold text-lg">{m.body}</p>
+          <Input label={m.inputLabel} placeholder={m.inputPlaceholder} fullWidth />
+        </ModalBody>
+        <ModalFooter>
+          <Button variant="outline" onClick={() => setModalOpen(false)}>{m.cancel}</Button>
+          <Button onClick={() => setModalOpen(false)}>{m.submit}</Button>
+        </ModalFooter>
+      </Modal>
+    </>
+  );
+}
 
+function ChevronDownIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+      <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+    </svg>
+  );
+}
+
+function HomeContent() {
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-12">
-        {/* Header */}
-        <div className="text-center space-y-6 animate-bounce-in">
-          <h1 className="text-6xl md:text-7xl font-black uppercase transform -rotate-2 leading-tight">
-            <span className="inline-block bg-[var(--primary)] text-white px-6 py-3 rounded-[var(--radius-lg)] border-[var(--border-width)] border-[var(--foreground)] shadow-[var(--shadow-lg)] transform rotate-2">
-              UI Library
-            </span>
-            <br />
-            <span className="inline-block bg-[var(--secondary)] text-[var(--foreground)] px-6 py-3 rounded-[var(--radius-lg)] border-[var(--border-width)] border-[var(--foreground)] shadow-[var(--shadow-lg)] transform -rotate-1 mt-4">
-              Graffiti Style
-            </span>
-          </h1>
-          <p className="text-2xl font-bold text-[var(--foreground)] transform rotate-1">
-            后现代主义 × 涂鸦艺术 × React 组件
-          </p>
-          <div className="flex gap-3 justify-center flex-wrap">
-            <Badge variant="primary" size="lg">TypeScript</Badge>
-            <Badge variant="secondary" size="lg">Tailwind CSS</Badge>
-            <Badge variant="success" size="lg" dot>
-              暗色模式
-            </Badge>
-            <Badge variant="warning" size="lg">
-              街头风格
-            </Badge>
-          </div>
-        </div>
-
-        {/* Buttons Section */}
-        <Card hover>
-          <CardHeader title="Buttons" subtitle="爆炸性的按钮组件 💥" />
-          <CardBody>
-            <div className="space-y-6">
-              {/* Variants */}
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-[var(--neutral-500)] uppercase">
-                  Variants
-                </h3>
-                <div className="flex flex-wrap gap-3">
-                  <Button variant="primary">Primary</Button>
-                  <Button variant="secondary">Secondary</Button>
-                  <Button variant="outline">Outline</Button>
-                  <Button variant="ghost">Ghost</Button>
-                  <Button variant="danger">Danger</Button>
-                </div>
-              </div>
-
-              {/* Sizes */}
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-[var(--neutral-500)] uppercase">
-                  Sizes
-                </h3>
-                <div className="flex flex-wrap items-center gap-3">
-                  <Button size="sm">Small</Button>
-                  <Button size="md">Medium</Button>
-                  <Button size="lg">Large</Button>
-                  <Button size="xl">Extra Large</Button>
-                </div>
-              </div>
-
-              {/* States */}
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-[var(--neutral-500)] uppercase">
-                  States
-                </h3>
-                <div className="flex flex-wrap gap-3">
-                  <Button loading>Loading</Button>
-                  <Button disabled>Disabled</Button>
-                  <Button
-                    leftIcon={
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        className="w-5 h-5"
-                      >
-                        <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-                      </svg>
-                    }
-                  >
-                    With Icon
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </CardBody>
-        </Card>
-
-        {/* Inputs Section */}
-        <Card hover>
-          <CardHeader title="Inputs" subtitle="输入框，但更酷 ✨" />
-          <CardBody>
-            <div className="space-y-4">
-              <Input
-                label="Username"
-                placeholder="Enter your username"
-                hint="Choose a unique username"
-              />
-              <Input
-                label="Email"
-                type="email"
-                placeholder="your@email.com"
-                status="success"
-                leftIcon={
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    className="w-5 h-5"
-                  >
-                    <path d="M3 4a2 2 0 00-2 2v1.161l8.441 4.221a1.25 1.25 0 001.118 0L19 7.162V6a2 2 0 00-2-2H3z" />
-                    <path d="M19 8.839l-7.77 3.885a2.75 2.75 0 01-2.46 0L1 8.839V14a2 2 0 002 2h14a2 2 0 002-2V8.839z" />
-                  </svg>
-                }
-              />
-              <Input
-                label="Password"
-                type="password"
-                placeholder="Enter password"
-                error="Password must be at least 8 characters"
-              />
-              <Textarea
-                label="Description"
-                placeholder="Write a description..."
-                hint="Maximum 500 characters"
-                rows={4}
-              />
-            </div>
-          </CardBody>
-        </Card>
-
-        {/* Badges Section */}
-        <Card hover>
-          <CardHeader title="Badges" subtitle="标签也能很街头 🏷️" />
-          <CardBody>
-            <div className="space-y-4">
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="default">Default</Badge>
-                <Badge variant="primary">Primary</Badge>
-                <Badge variant="secondary">Secondary</Badge>
-                <Badge variant="success">Success</Badge>
-                <Badge variant="warning">Warning</Badge>
-                <Badge variant="error">Error</Badge>
-                <Badge variant="info">Info</Badge>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="primary" rounded>
-                  Rounded
-                </Badge>
-                <Badge variant="success" dot>
-                  With Dot
-                </Badge>
-                <Badge variant="warning" removable onRemove={() => console.log('Removed')}>
-                  Removable
-                </Badge>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge size="sm">Small</Badge>
-                <Badge size="md">Medium</Badge>
-                <Badge size="lg">Large</Badge>
-              </div>
-            </div>
-          </CardBody>
-        </Card>
-
-        {/* Cards Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card hover bordered shadowed>
-            <CardHeader title="Basic Card" />
-            <CardBody>
-              <p className="text-[var(--neutral-600)] font-semibold">
-                This card has attitude! 😎
-              </p>
-            </CardBody>
-          </Card>
-
-          <Card hover bordered shadowed>
-            <CardHeader
-              title="With Actions"
-              action={
-                <Button size="sm" variant="secondary">
-                  Edit ✏️
-                </Button>
-              }
-            />
-            <CardBody>
-              <p className="text-[var(--neutral-600)] font-semibold">Card with header actions.</p>
-            </CardBody>
-            <CardFooter>
-              <Button size="sm" variant="outline">
-                Cancel
-              </Button>
-              <Button size="sm">Save</Button>
-            </CardFooter>
-          </Card>
-
-          <Card hover padding="lg" bordered shadowed>
-            <CardBody>
-              <h3 className="text-lg font-extrabold mb-2 uppercase">Large Padding</h3>
-              <p className="text-[var(--neutral-600)] font-semibold">Extra room to breathe! 🌬️</p>
-            </CardBody>
-          </Card>
-        </div>
-
-        {/* Tabs Section */}
-        <Card hover>
-          <CardHeader title="Tabs" subtitle="切换，但更有风格 🔥" />
-          <CardBody>
-            <Tabs defaultValue="tab1">
-              <TabsList>
-                <TabsTrigger value="tab1">Overview</TabsTrigger>
-                <TabsTrigger value="tab2">Analytics</TabsTrigger>
-                <TabsTrigger value="tab3">Settings</TabsTrigger>
-              </TabsList>
-              <TabsContent value="tab1">
-                <p className="text-[var(--neutral-600)] font-semibold text-lg">Overview content - where the magic happens! ✨</p>
-              </TabsContent>
-              <TabsContent value="tab2">
-                <p className="text-[var(--neutral-600)] font-semibold text-lg">Analytics content - check out these stats! 📊</p>
-              </TabsContent>
-              <TabsContent value="tab3">
-                <p className="text-[var(--neutral-600)] font-semibold text-lg">Settings content - tweak it your way! ⚙️</p>
-              </TabsContent>
-            </Tabs>
-
-            <div className="mt-8">
-              <h4 className="text-sm font-black mb-4 uppercase tracking-wide">Pills Variant 💊</h4>
-              <Tabs defaultValue="pill1" variant="pills">
-                <TabsList>
-                  <TabsTrigger value="pill1">Home</TabsTrigger>
-                  <TabsTrigger value="pill2">Profile</TabsTrigger>
-                  <TabsTrigger value="pill3">Messages</TabsTrigger>
-                </TabsList>
-                <TabsContent value="pill1">
-                  <p className="font-semibold">Home sweet home! 🏠</p>
-                </TabsContent>
-                <TabsContent value="pill2">
-                  <p className="font-semibold">Your profile looks dope! 😎</p>
-                </TabsContent>
-                <TabsContent value="pill3">
-                  <p className="font-semibold">You've got mail! 📬</p>
-                </TabsContent>
-              </Tabs>
-            </div>
-          </CardBody>
-        </Card>
-
-        {/* Interactive Components */}
-        <Card hover>
-          <CardHeader title="Interactive" subtitle="模态框、Toast 和下拉菜单 🎪" />
-          <CardBody>
-            <div className="flex flex-wrap gap-4">
-              {/* Modal Trigger */}
-              <Button onClick={() => setModalOpen(true)}>Open Modal</Button>
-
-              {/* Toast Triggers */}
-              <Button
-                variant="secondary"
-                onClick={() =>
-                  addToast({
-                    title: 'Boom! Success! 💥',
-                    description: 'Your changes are locked in!',
-                    status: 'success',
-                  })
-                }
-              >
-                Success Toast
-              </Button>
-
-              <Button
-                variant="outline"
-                onClick={() =>
-                  addToast({
-                    title: 'Hold Up! ⚠️',
-                    description: 'Better check that input again.',
-                    status: 'warning',
-                  })
-                }
-              >
-                Warning Toast
-              </Button>
-
-              <Button
-                variant="danger"
-                onClick={() =>
-                  addToast({
-                    title: 'Uh Oh! 💀',
-                    description: 'Something went sideways.',
-                    status: 'error',
-                  })
-                }
-              >
-                Error Toast
-              </Button>
-
-              {/* Dropdown */}
-              <Dropdown
-                trigger={
-                  <Button variant="ghost">
-                    More Options
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </Button>
-                }
-              >
-                <DropdownLabel>Actions</DropdownLabel>
-                <DropdownItem
-                  icon={
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-                    </svg>
-                  }
-                  onClick={() => console.log('Create new')}
-                >
-                  Create New
-                </DropdownItem>
-                <DropdownItem onClick={() => console.log('Edit')}>Edit</DropdownItem>
-                <DropdownItem onClick={() => console.log('Duplicate')}>Duplicate</DropdownItem>
-                <DropdownSeparator />
-                <DropdownItem destructive onClick={() => console.log('Delete')}>
-                  Delete
-                </DropdownItem>
-              </Dropdown>
-            </div>
-          </CardBody>
-        </Card>
+        <PageHeader />
+        <ButtonsSection />
+        <InputsSection />
+        <BadgesSection />
+        <CardsSection />
+        <TabsSection />
+        <InteractiveSection />
       </div>
-
-      {/* Modal Example */}
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} size="lg">
-        <ModalHeader title="Yo! Modal 👋" />
-        <ModalBody>
-          <p className="text-[var(--neutral-600)] mb-6 font-semibold text-lg">
-            This modal is straight fire! 🔥 It can contain anything you want - forms, images, or whatever else floats your boat.
-          </p>
-          <Input label="Your Name" placeholder="What should we call you?" fullWidth />
-        </ModalBody>
-        <ModalFooter>
-          <Button variant="outline" onClick={() => setModalOpen(false)}>
-            Nah, Cancel
-          </Button>
-          <Button onClick={() => setModalOpen(false)}>Let's Go! 🚀</Button>
-        </ModalFooter>
-      </Modal>
     </div>
   );
 }
@@ -397,7 +341,7 @@ function ComponentShowcase() {
 export default function Home() {
   return (
     <ToastProvider>
-      <ComponentShowcase />
+      <HomeContent />
     </ToastProvider>
   );
 }
