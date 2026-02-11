@@ -1,248 +1,338 @@
 'use client';
 
+import { useState } from 'react';
+import Link from 'next/link';
 import {
-  Badge,
   Button,
+  Input,
+  Textarea,
   Card,
+  CardHeader,
   CardBody,
   CardFooter,
-  CardHeader,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
+  Badge,
   ToastProvider,
   useToast,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  Dropdown,
+  DropdownItem,
+  DropdownSeparator,
+  DropdownLabel,
 } from '@/components/ui';
-import postsData from './data.json';
+import { homeData } from '@/lib/data';
 
-type ForumCategory = '深度避雷' | '极致省钱' | '情绪求助';
+const sizeMap = { 'Small': 'sm', 'Medium': 'md', 'Large': 'lg', 'Extra Large': 'xl' } as const;
+const variantMap = { Primary: 'primary', Secondary: 'secondary', Outline: 'outline', Ghost: 'ghost', Danger: 'danger', Default: 'default', Success: 'success', Warning: 'warning', Error: 'error', Info: 'info' } as const;
 
-type EngagementMetrics = {
-  likes: number;
-  saves: number;
-};
-
-type Comment = {
-  user: string;
-  content: string;
-  createdAt: string;
-};
-
-type ForumPost = {
-  id: string;
-  title: string;
-  description: string;
-  category: ForumCategory;
-  topic: string;
-  tags: string[];
-  engagement: EngagementMetrics;
-  comments: Comment[];
-};
-
-const posts = postsData as ForumPost[];
-
-const CATEGORY_LABELS: { value: ForumCategory | '全部'; badgeVariant: 'primary' | 'secondary' | 'info' }[] = [
-  { value: '全部', badgeVariant: 'info' },
-  { value: '深度避雷', badgeVariant: 'primary' },
-  { value: '极致省钱', badgeVariant: 'secondary' },
-  { value: '情绪求助', badgeVariant: 'info' },
-];
-
-function formatNumber(num: number) {
-  if (num >= 10000) {
-    return `${(num / 10000).toFixed(1).replace(/\.0$/, '')}w`;
-  }
-  if (num >= 1000) {
-    return `${(num / 1000).toFixed(1).replace(/\.0$/, '')}k`;
-  }
-  return String(num);
+function PageHeader() {
+  const { header } = homeData;
+  return (
+    <div className="text-center space-y-6 animate-bounce-in">
+      <h1 className="text-6xl md:text-7xl font-black uppercase transform -rotate-2 leading-tight">
+        <span className="inline-block bg-[var(--primary)] text-white px-6 py-3 rounded-[var(--radius-lg)] border-[var(--border-width)] border-[var(--foreground)] shadow-[var(--shadow-lg)] transform rotate-2">
+          {header.titlePrimary}
+        </span>
+        <br />
+        <span className="inline-block bg-[var(--secondary)] text-[var(--foreground)] px-6 py-3 rounded-[var(--radius-lg)] border-[var(--border-width)] border-[var(--foreground)] shadow-[var(--shadow-lg)] transform -rotate-1 mt-4">
+          {header.titleSecondary}
+        </span>
+      </h1>
+      <p className="text-2xl font-bold text-[var(--foreground)] transform rotate-1">
+        {header.subtitle}
+      </p>
+      <div className="flex gap-3 justify-center flex-wrap items-center">
+        <Link href={header.nav.href}>
+          <Button variant="primary" size="lg">{header.nav.label}</Button>
+        </Link>
+        {header.badges.map((b) => (
+          <Badge key={b.label} variant={variantMap[b.variant as keyof typeof variantMap] ?? 'default'} size={b.size as 'sm' | 'md' | 'lg'} dot={b.dot}>
+            {b.label}
+          </Badge>
+        ))}
+      </div>
+    </div>
+  );
 }
 
-function ForumCard({ post }: { post: ForumPost }) {
-  const { addToast } = useToast();
-
+function ButtonsSection() {
+  const { buttons } = homeData.sections;
   return (
-    <Card hover bordered shadowed padding="lg" className="flex flex-col h-full animate-slide-up">
-      <CardHeader
-        title={post.title}
-        subtitle={post.topic}
-        action={
-          <Badge variant="primary" size="sm">
-            {post.category}
-          </Badge>
-        }
-      />
+    <Card hover>
+      <CardHeader title={buttons.title} subtitle={buttons.subtitle} />
       <CardBody>
-        <p className="text-[var(--card-foreground)] font-semibold text-sm leading-relaxed whitespace-pre-line">
-          {post.description}
-        </p>
-
-        {post.tags.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {post.tags.map((tag) => (
-              <Badge key={tag} variant="secondary" size="sm" rounded>
-                #{tag}
-              </Badge>
-            ))}
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-[var(--neutral-500)] uppercase">{buttons.variants.label}</h3>
+            <div className="flex flex-wrap gap-3">
+              {buttons.variants.items.map((v) => (
+                <Button key={v} variant={variantMap[v as keyof typeof variantMap] ?? 'primary'}>{v}</Button>
+              ))}
+            </div>
           </div>
-        )}
-
-        <div className="mt-5 flex items-center justify-between text-xs font-black uppercase tracking-wide text-[var(--neutral-600)]">
-          <div className="flex items-center gap-4">
-            <span>赞 {formatNumber(post.engagement.likes)}</span>
-            <span>收藏 {formatNumber(post.engagement.saves)}</span>
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-[var(--neutral-500)] uppercase">{buttons.sizes.label}</h3>
+            <div className="flex flex-wrap items-center gap-3">
+              {buttons.sizes.items.map((s) => (
+                <Button key={s} size={sizeMap[s as keyof typeof sizeMap] ?? 'md'}>{s}</Button>
+              ))}
+            </div>
           </div>
-          <span className="text-[var(--neutral-500)]">评论 {post.comments.length}</span>
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-[var(--neutral-500)] uppercase">{buttons.states.label}</h3>
+            <div className="flex flex-wrap gap-3">
+              <Button loading>{buttons.states.loading}</Button>
+              <Button disabled>{buttons.states.disabled}</Button>
+              <Button leftIcon={<PlusIcon />}>{buttons.states.withIcon}</Button>
+            </div>
+          </div>
         </div>
       </CardBody>
-      <CardFooter className="flex flex-col items-stretch gap-3 pt-4 border-t border-dashed border-[var(--neutral-200)]">
-        <div className="space-y-2">
-          {post.comments.slice(0, 3).map((comment) => (
-            <div key={`${post.id}-${comment.user}-${comment.createdAt}`} className="text-xs">
-              <div className="flex items-center justify-between">
-                <span className="font-black uppercase tracking-wide text-[var(--neutral-700)]">
-                  {comment.user}
-                </span>
-                <span className="text-[var(--neutral-500)] font-semibold">{comment.createdAt}</span>
-              </div>
-              <p className="text-[var(--neutral-800)] font-semibold mt-1">{comment.content}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex items-center justify-between pt-2">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() =>
-              addToast({
-                title: 'YO! 已收藏 💾',
-                description: '这篇经验被你收入“避坑宝典”啦！',
-                status: 'success',
-              })
-            }
-          >
-            想试但先收藏
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() =>
-              addToast({
-                title: '写点真心话 📝',
-                description: '你的一条评论，也许刚好救到同样迷茫的人。',
-                status: 'info',
-              })
-            }
-          >
-            我也想说两句
-          </Button>
-        </div>
-      </CardFooter>
     </Card>
   );
 }
 
-function ForumPage() {
-  const total = posts.length;
-  const byCategory = (category: ForumCategory) =>
-    posts.filter((post) => post.category === category);
-
+function PlusIcon() {
   return (
-    <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-10">
-      <div className="max-w-6xl mx-auto space-y-10">
-        <header className="space-y-6 animate-bounce-in">
-          <h1 className="text-5xl md:text-6xl font-black uppercase leading-tight graffiti-outline">
-            <span className="inline-block bg-[var(--primary)] text-[var(--on-primary)] px-5 py-2 rounded-[var(--radius-lg)] border-[var(--border-width-thick)] border-[var(--border)] shadow-[var(--shadow-xl)] transform -rotate-2">
-              生活雷达站
-            </span>
-            <br />
-            <span className="inline-block bg-[var(--secondary)] text-[var(--on-secondary)] px-4 py-2 mt-3 rounded-[var(--radius-lg)] border-[var(--border-width)] border-[var(--border)] shadow-[var(--shadow-lg)] transform rotate-1">
-              仿小红书 · 城市打工人实录
-            </span>
-          </h1>
-          <p className="max-w-3xl text-[var(--neutral-900)] font-bold text-base md:text-lg transform -rotate-1">
-            这里不卖梦想，只说<strong>真实体验</strong>。深度避雷、极致省钱、情绪求助，全部来自 25-35 岁城市打工人的生活实验，
-            方便你、也方便商业分析爬虫，抓住每一个细小但致命的痛点。
-          </p>
-          <div className="flex flex-wrap items-center gap-3">
-            <Badge variant="primary" size="lg" dot>
-              共 {total} 篇真人故事
-            </Badge>
-            <Badge variant="secondary" size="lg">
-              深度避雷 {byCategory('深度避雷').length}
-            </Badge>
-            <Badge variant="secondary" size="lg">
-              极致省钱 {byCategory('极致省钱').length}
-            </Badge>
-            <Badge variant="info" size="lg">
-              情绪求助 {byCategory('情绪求助').length}
-            </Badge>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+      <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+    </svg>
+  );
+}
+
+function InputsSection() {
+  const { inputs } = homeData.sections;
+  return (
+    <Card hover>
+      <CardHeader title={inputs.title} subtitle={inputs.subtitle} />
+      <CardBody>
+        <div className="space-y-4">
+          {inputs.fields.map((f) => (
+            f.type === 'email' ? (
+              <Input
+                key={f.label}
+                label={f.label}
+                type="email"
+                placeholder={f.placeholder}
+                status={f.status as 'success' | undefined}
+                leftIcon={<EmailIcon />}
+              />
+            ) : 'rows' in f && f.rows ? (
+              <Textarea
+                key={f.label}
+                label={f.label}
+                placeholder={f.placeholder}
+                hint={f.hint}
+                rows={f.rows}
+              />
+            ) : (
+              <Input
+                key={f.label}
+                label={f.label}
+                type={f.type ?? 'text'}
+                placeholder={f.placeholder}
+                hint={f.hint}
+                error={f.error}
+              />
+            )
+          ))}
+        </div>
+      </CardBody>
+    </Card>
+  );
+}
+
+function EmailIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+      <path d="M3 4a2 2 0 00-2 2v1.161l8.441 4.221a1.25 1.25 0 001.118 0L19 7.162V6a2 2 0 00-2-2H3z" />
+      <path d="M19 8.839l-7.77 3.885a2.75 2.75 0 01-2.46 0L1 8.839V14a2 2 0 002 2h14a2 2 0 002-2V8.839z" />
+    </svg>
+  );
+}
+
+function BadgesSection() {
+  const { badges } = homeData.sections;
+  return (
+    <Card hover>
+      <CardHeader title={badges.title} subtitle={badges.subtitle} />
+      <CardBody>
+        <div className="space-y-4">
+          <div className="flex flex-wrap gap-2">
+            {badges.variants.map((v) => (
+              <Badge key={v} variant={variantMap[v as keyof typeof variantMap] ?? 'default'}>{v}</Badge>
+            ))}
           </div>
-        </header>
+          <div className="flex flex-wrap gap-2">
+            {badges.extras.map((e) => (
+              <Badge key={e.label} variant={variantMap[e.variant as keyof typeof variantMap] ?? 'primary'} rounded={e.rounded} dot={e.dot} removable={e.removable} onRemove={e.removable ? () => {} : undefined}>{e.label}</Badge>
+            ))}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {badges.sizes.map((s) => (
+              <Badge key={s} size={sizeMap[s as keyof typeof sizeMap] ?? 'md'}>{s}</Badge>
+            ))}
+          </div>
+        </div>
+      </CardBody>
+    </Card>
+  );
+}
 
-        <Card hover bordered shadowed>
-          <CardHeader
-            title="话题导航"
-            subtitle="按类型刷贴，更快锁定你关心的生活场景 🔍"
-          />
+function CardsSection() {
+  const { cards } = homeData.sections;
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {cards.items.map((item) => (
+        <Card key={item.title} hover bordered shadowed padding={item.padding === 'lg' ? 'lg' : 'md'}>
+          {item.padding !== 'lg' && (
+            <CardHeader
+              title={item.title}
+              action={item.actionLabel ? <Button size="sm" variant="secondary">{item.actionLabel}</Button> : undefined}
+            />
+          )}
           <CardBody>
-            <Tabs defaultValue="全部" variant="pills">
-              <TabsList>
-                {CATEGORY_LABELS.map((item) => (
-                  <TabsTrigger key={item.value} value={item.value}>
-                    {item.value === '全部' ? '全部笔记' : item.value}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-
-              <TabsContent value="全部">
-                <section
-                  aria-label="全部帖子"
-                  className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
-                >
-                  {posts.map((post) => (
-                    <ForumCard key={post.id} post={post} />
-                  ))}
-                </section>
-              </TabsContent>
-
-              <TabsContent value="深度避雷">
-                <section
-                  aria-label="深度避雷类帖子"
-                  className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
-                >
-                  {byCategory('深度避雷').map((post) => (
-                    <ForumCard key={post.id} post={post} />
-                  ))}
-                </section>
-              </TabsContent>
-
-              <TabsContent value="极致省钱">
-                <section
-                  aria-label="极致省钱类帖子"
-                  className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
-                >
-                  {byCategory('极致省钱').map((post) => (
-                    <ForumCard key={post.id} post={post} />
-                  ))}
-                </section>
-              </TabsContent>
-
-              <TabsContent value="情绪求助">
-                <section
-                  aria-label="情绪求助类帖子"
-                  className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
-                >
-                  {byCategory('情绪求助').map((post) => (
-                    <ForumCard key={post.id} post={post} />
-                  ))}
-                </section>
-              </TabsContent>
-            </Tabs>
+            {item.padding === 'lg' ? (
+              <>
+                <h3 className="text-lg font-extrabold mb-2 uppercase">{item.title}</h3>
+                <p className="text-[var(--neutral-600)] font-semibold">{item.body}</p>
+              </>
+            ) : (
+              item.body && <p className="text-[var(--neutral-600)] font-semibold">{item.body}</p>
+            )}
           </CardBody>
+          {item.footer && (
+            <CardFooter>
+              <Button size="sm" variant="outline">{item.footer.cancel}</Button>
+              <Button size="sm">{item.footer.submit}</Button>
+            </CardFooter>
+          )}
         </Card>
+      ))}
+    </div>
+  );
+}
+
+function TabsSection() {
+  const { tabs } = homeData.sections;
+  return (
+    <Card hover>
+      <CardHeader title={tabs.title} subtitle={tabs.subtitle} />
+      <CardBody>
+        <Tabs defaultValue={tabs.line.tabs[0].value}>
+          <TabsList>
+            {tabs.line.tabs.map((t) => <TabsTrigger key={t.value} value={t.value}>{t.label}</TabsTrigger>)}
+          </TabsList>
+          {tabs.line.tabs.map((t) => (
+            <TabsContent key={t.value} value={t.value}>
+              <p className="text-[var(--neutral-600)] font-semibold text-lg">{t.content}</p>
+            </TabsContent>
+          ))}
+        </Tabs>
+        <div className="mt-8">
+          <h4 className="text-sm font-black mb-4 uppercase tracking-wide">{tabs.pills.label}</h4>
+          <Tabs defaultValue={tabs.pills.tabs[0].value} variant="pills">
+            <TabsList>
+              {tabs.pills.tabs.map((t) => <TabsTrigger key={t.value} value={t.value}>{t.label}</TabsTrigger>)}
+            </TabsList>
+            {tabs.pills.tabs.map((t) => (
+              <TabsContent key={t.value} value={t.value}>
+                <p className="font-semibold">{t.content}</p>
+              </TabsContent>
+            ))}
+          </Tabs>
+        </div>
+      </CardBody>
+    </Card>
+  );
+}
+
+function InteractiveSection() {
+  const { addToast } = useToast();
+  const [modalOpen, setModalOpen] = useState(false);
+  const { interactive } = homeData.sections;
+  const m = homeData.sections.modal;
+  return (
+    <>
+      <Card hover>
+        <CardHeader title={interactive.title} subtitle={interactive.subtitle} />
+        <CardBody>
+          <div className="flex flex-wrap gap-4">
+            <Button onClick={() => setModalOpen(true)}>{interactive.modalTrigger}</Button>
+            {interactive.toasts.map((t) => (
+              <Button
+                key={t.button}
+                variant={t.status === 'success' ? 'secondary' : t.status === 'warning' ? 'outline' : 'danger'}
+                onClick={() => addToast({ title: t.title, description: t.description, status: t.status as 'success' | 'warning' | 'error' })}
+              >
+                {t.button}
+              </Button>
+            ))}
+            <Dropdown
+              trigger={
+                <Button variant="ghost" rightIcon={<ChevronDownIcon />}>
+                  {interactive.dropdown.trigger}
+                </Button>
+              }
+            >
+              <DropdownLabel>{interactive.dropdown.label}</DropdownLabel>
+              {interactive.dropdown.items.slice(0, -1).map((item) => (
+                <DropdownItem
+                  key={item.label}
+                  icon={item.icon ? <PlusIcon /> : undefined}
+                  onClick={() => {}}
+                >
+                  {item.label}
+                </DropdownItem>
+              ))}
+              <DropdownSeparator />
+              <DropdownItem destructive onClick={() => {}}>
+                {interactive.dropdown.items[interactive.dropdown.items.length - 1].label}
+              </DropdownItem>
+            </Dropdown>
+          </div>
+        </CardBody>
+      </Card>
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} size="lg">
+        <ModalHeader title={m.title} />
+        <ModalBody>
+          <p className="text-[var(--neutral-600)] mb-6 font-semibold text-lg">{m.body}</p>
+          <Input label={m.inputLabel} placeholder={m.inputPlaceholder} fullWidth />
+        </ModalBody>
+        <ModalFooter>
+          <Button variant="outline" onClick={() => setModalOpen(false)}>{m.cancel}</Button>
+          <Button onClick={() => setModalOpen(false)}>{m.submit}</Button>
+        </ModalFooter>
+      </Modal>
+    </>
+  );
+}
+
+function ChevronDownIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+      <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+    </svg>
+  );
+}
+
+function HomeContent() {
+  return (
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto space-y-12">
+        <PageHeader />
+        <ButtonsSection />
+        <InputsSection />
+        <BadgesSection />
+        <CardsSection />
+        <TabsSection />
+        <InteractiveSection />
       </div>
     </div>
   );
@@ -251,8 +341,7 @@ function ForumPage() {
 export default function Home() {
   return (
     <ToastProvider>
-      <ForumPage />
+      <HomeContent />
     </ToastProvider>
   );
 }
-
