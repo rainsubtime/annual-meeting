@@ -1,8 +1,78 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Base colors - Bold graffiti palette */
+  --background: #fef6e4;
+  --foreground: #001858;
+  --card: #ffffff;
+  --card-foreground: #001858;
+  --border: #001858;
+  --input: #f3d2c1;
+  --ring: #ff006e;
+
+  /* Primary - Hot Pink/Magenta */
+  --primary: #ff006e;
+  --primary-hover: #d90058;
+  --primary-light: #ffcfe3;
+  --primary-dark: #8b0039;
+  --on-primary: #ffffff;
+
+  /* Secondary - Electric Cyan */
+  --secondary: #00e0ff;
+  --secondary-hover: #00b8d4;
+  --secondary-light: #b3f5ff;
+  --secondary-dark: #006978;
+  --on-secondary: #001858;
+
+  /* Accent - Vibrant Yellow */
+  --accent: #ffd60a;
+  --accent-hover: #ffc300;
+  --accent-light: #fff8cc;
+  --accent-dark: #997a00;
+
+  /* Neutral - Bold blacks and creams */
+  --neutral-50: #fef6e4;
+  --neutral-100: #ffeaa7;
+  --neutral-200: #fdcb6e;
+  --neutral-300: #f8b500;
+  --neutral-400: #e17055;
+  --neutral-500: #d63031;
+  --neutral-600: #b33939;
+  --neutral-700: #6c5ce7;
+  --neutral-800: #0984e3;
+  --neutral-900: #001858;
+
+  /* Semantic colors - Neon/Street style */
+  --success: #00ff88;
+  --success-light: #b3ffe8;
+  --warning: #ffd60a;
+  --warning-light: #fff8cc;
+  --error: #ff006e;
+  --error-light: #ffcfe3;
+  --info: #8338ec;
+  --info-light: #dfc8f8;
+
+  /* Shadows - Strong, offset, graffiti-style */
+  --shadow-sm: 3px 3px 0 rgba(0, 24, 88, 0.2);
+  --shadow: 5px 5px 0 rgba(0, 24, 88, 0.3);
+  --shadow-md: 7px 7px 0 rgba(0, 24, 88, 0.4);
+  --shadow-lg: 10px 10px 0 rgba(0, 24, 88, 0.5);
+  --shadow-xl: 15px 15px 0 rgba(0, 24, 88, 0.6);
+
+  /* Border radius - Irregular, hand-drawn feel */
+  --radius-sm: 0.5rem;
+  --radius: 0.75rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2rem;
+
+  /* Transitions - Snappy, energetic */
+  --transition: 100ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --transition-slow: 250ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* Border widths */
+  --border-width: 3px;
+  --border-width-thick: 5px;
 }
 
 @theme inline {
@@ -14,13 +84,238 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0a0118;
+    --foreground: #fef6e4;
+    --card: #1a0f2e;
+    --card-foreground: #fef6e4;
+    --border: #ff006e;
+    --input: #2d1b3d;
+    --ring: #00e0ff;
+
+    /* Primary - Brighter Hot Pink in dark mode */
+    --primary: #ff3385;
+    --primary-hover: #ff66a3;
+    --primary-light: #4d001f;
+    --primary-dark: #ffcfe3;
+    --on-primary: #0a0118;
+
+    /* Secondary - Electric Cyan stays bright */
+    --secondary: #00ffff;
+    --secondary-hover: #33ffff;
+    --secondary-light: #003d40;
+    --secondary-dark: #b3f5ff;
+    --on-secondary: #0a0118;
+
+    /* Accent - Vibrant Yellow */
+    --accent: #ffed4e;
+    --accent-hover: #fff685;
+    --accent-light: #4d4400;
+    --accent-dark: #fff8cc;
+
+    /* Neutral - Dark purples and neons */
+    --neutral-50: #0a0118;
+    --neutral-100: #1a0f2e;
+    --neutral-200: #2d1b3d;
+    --neutral-300: #4a2f5c;
+    --neutral-400: #6c4a7a;
+    --neutral-500: #8f6b9f;
+    --neutral-600: #b38ec5;
+    --neutral-700: #d4b5e0;
+    --neutral-800: #e8d7f0;
+    --neutral-900: #fef6e4;
+
+    /* Semantic colors - Neon bright */
+    --success: #00ff88;
+    --success-light: #003d2f;
+    --warning: #ffed4e;
+    --warning-light: #4d4400;
+    --error: #ff3385;
+    --error-light: #4d001f;
+    --info: #a76aff;
+    --info-light: #2d0f4d;
+
+    /* Shadows - Neon glow effect */
+    --shadow-sm: 3px 3px 0 rgba(255, 0, 110, 0.3);
+    --shadow: 5px 5px 0 rgba(255, 0, 110, 0.4), 0 0 20px rgba(255, 0, 110, 0.2);
+    --shadow-md: 7px 7px 0 rgba(255, 0, 110, 0.5), 0 0 30px rgba(255, 0, 110, 0.3);
+    --shadow-lg: 10px 10px 0 rgba(255, 0, 110, 0.6), 0 0 40px rgba(255, 0, 110, 0.4);
+    --shadow-xl: 15px 15px 0 rgba(255, 0, 110, 0.7), 0 0 50px rgba(255, 0, 110, 0.5);
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Graffiti texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 24, 88, 0.01) 2px,
+      rgba(0, 24, 88, 0.01) 4px
+    );
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.5;
+}
+
+/* Keyframe animations - Energetic, bouncy */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) rotate(-2deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) rotate(2deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) rotate(-3deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(-1deg);
+  }
+  50% {
+    transform: rotate(1deg);
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes neon-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px var(--primary)) brightness(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 20px var(--primary)) brightness(1.2);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--transition) ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp var(--transition-slow) ease-out;
+}
+
+.animate-slide-down {
+  animation: slideDown var(--transition-slow) ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn var(--transition-slow) cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.animate-wiggle {
+  animation: wiggle 0.5s ease-in-out;
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Graffiti-style text effects */
+.graffiti-text {
+  text-shadow:
+    3px 3px 0 var(--primary),
+    6px 6px 0 var(--secondary);
+  transform: rotate(-2deg);
+}
+
+.graffiti-outline {
+  text-shadow:
+    -2px -2px 0 var(--border),
+    2px -2px 0 var(--border),
+    -2px 2px 0 var(--border),
+    2px 2px 0 var(--border),
+    4px 4px 0 var(--primary);
+}
+
+/* Hand-drawn border effect */
+.hand-drawn-border {
+  border: var(--border-width) solid var(--border);
+  border-radius: var(--radius-md);
+  position: relative;
+}
+
+.hand-drawn-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-md);
+  opacity: 0.5;
+  transform: rotate(-0.5deg);
 }
