@@ -1,0 +1,149 @@
+{
+  "home": {
+    "header": {
+      "titlePrimary": "UI Library",
+      "titleSecondary": "Graffiti Style",
+      "subtitle": "后现代主义 × 涂鸦艺术 × React 组件",
+      "nav": {
+        "label": "进入聊天室 💬",
+        "href": "/chat"
+      },
+      "badges": [
+        { "label": "TypeScript", "variant": "primary", "size": "lg" },
+        { "label": "Tailwind CSS", "variant": "secondary", "size": "lg" },
+        { "label": "暗色模式", "variant": "success", "size": "lg", "dot": true },
+        { "label": "街头风格", "variant": "warning", "size": "lg" }
+      ]
+    },
+    "sections": {
+      "buttons": {
+        "title": "Buttons",
+        "subtitle": "爆炸性的按钮组件 💥",
+        "variants": {
+          "label": "Variants",
+          "items": ["Primary", "Secondary", "Outline", "Ghost", "Danger"]
+        },
+        "sizes": {
+          "label": "Sizes",
+          "items": ["Small", "Medium", "Large", "Extra Large"]
+        },
+        "states": {
+          "label": "States",
+          "loading": "Loading",
+          "disabled": "Disabled",
+          "withIcon": "With Icon"
+        }
+      },
+      "inputs": {
+        "title": "Inputs",
+        "subtitle": "输入框，但更酷 ✨",
+        "fields": [
+          { "label": "Username", "placeholder": "Enter your username", "hint": "Choose a unique username" },
+          { "label": "Email", "type": "email", "placeholder": "your@email.com", "status": "success" },
+          { "label": "Password", "type": "password", "placeholder": "Enter password", "error": "Password must be at least 8 characters" },
+          { "label": "Description", "placeholder": "Write a description...", "hint": "Maximum 500 characters", "rows": 4 }
+        ]
+      },
+      "badges": {
+        "title": "Badges",
+        "subtitle": "标签也能很街头 🏷️",
+        "variants": ["Default", "Primary", "Secondary", "Success", "Warning", "Error", "Info"],
+        "extras": [
+          { "label": "Rounded", "variant": "primary", "rounded": true },
+          { "label": "With Dot", "variant": "success", "dot": true },
+          { "label": "Removable", "variant": "warning", "removable": true }
+        ],
+        "sizes": ["Small", "Medium", "Large"]
+      },
+      "cards": {
+        "title": "Cards",
+        "items": [
+          { "title": "Basic Card", "body": "This card has attitude! 😎" },
+          { "title": "With Actions", "actionLabel": "Edit ✏️", "body": "Card with header actions.", "footer": { "cancel": "Cancel", "submit": "Save" } },
+          { "title": "Large Padding", "body": "Extra room to breathe! 🌬️", "padding": "lg" }
+        ]
+      },
+      "tabs": {
+        "title": "Tabs",
+        "subtitle": "切换，但更有风格 🔥",
+        "line": {
+          "tabs": [
+            { "value": "tab1", "label": "Overview", "content": "Overview content - where the magic happens! ✨" },
+            { "value": "tab2", "label": "Analytics", "content": "Analytics content - check out these stats! 📊" },
+            { "value": "tab3", "label": "Settings", "content": "Settings content - tweak it your way! ⚙️" }
+          ]
+        },
+        "pills": {
+          "label": "Pills Variant 💊",
+          "tabs": [
+            { "value": "pill1", "label": "Home", "content": "Home sweet home! 🏠" },
+            { "value": "pill2", "label": "Profile", "content": "Your profile looks dope! 😎" },
+            { "value": "pill3", "label": "Messages", "content": "You've got mail! 📬" }
+          ]
+        }
+      },
+      "interactive": {
+        "title": "Interactive",
+        "subtitle": "模态框、Toast 和下拉菜单 🎪",
+        "modalTrigger": "Open Modal",
+        "toasts": [
+          { "button": "Success Toast", "title": "Boom! Success! 💥", "description": "Your changes are locked in!", "status": "success" },
+          { "button": "Warning Toast", "title": "Hold Up! ⚠️", "description": "Better check that input again.", "status": "warning" },
+          { "button": "Error Toast", "title": "Uh Oh! 💀", "description": "Something went sideways.", "status": "error" }
+        ],
+        "dropdown": {
+          "trigger": "More Options",
+          "label": "Actions",
+          "items": [
+            { "label": "Create New", "icon": true },
+            { "label": "Edit" },
+            { "label": "Duplicate" },
+            { "label": "Delete", "destructive": true }
+          ]
+        }
+      },
+      "modal": {
+        "title": "Yo! Modal 👋",
+        "body": "This modal is straight fire! 🔥 It can contain anything you want - forms, images, or whatever else floats your boat.",
+        "inputLabel": "Your Name",
+        "inputPlaceholder": "What should we call you?",
+        "cancel": "Nah, Cancel",
+        "submit": "Let's Go! 🚀"
+      }
+    }
+  },
+  "chat": {
+    "page": {
+      "backLabel": "← 返回首页",
+      "backHref": "/",
+      "title": "聊天室",
+      "subtitle": "基于 SSE 的实时聊天",
+      "connectedLabel": "已连接",
+      "disconnectedLabel": "未连接",
+      "dropdownTrigger": "更多",
+      "dropdownLabel": "聊天室",
+      "dropdownAbout": "关于",
+      "dropdownRefresh": "刷新连接",
+      "nicknameLabel": "昵称",
+      "nicknamePlaceholder": "输入昵称（可选，默认匿名）",
+      "messageLabel": "消息",
+      "messagePlaceholder": "输入消息...",
+      "sendLabel": "发送",
+      "emptyMessage": "暂无消息，发一条试试吧 👋",
+      "footerCount": "共 {count} 条消息"
+    },
+    "about": {
+      "title": "关于聊天室",
+      "body": "基于 SSE（Server-Sent Events）的实时聊天室，使用本项目 UI 组件库构建。消息仅在当前服务进程内保存，重启后清空。",
+      "closeLabel": "关闭"
+    },
+    "toasts": {
+      "sendFailTitle": "发送失败",
+      "sendFailDesc": "请稍后重试",
+      "networkErrorTitle": "网络错误",
+      "networkErrorDesc": "无法连接服务器",
+      "refreshSuccess": "已刷新"
+    },
+    "defaultNickname": "匿名"
+  }
+}
