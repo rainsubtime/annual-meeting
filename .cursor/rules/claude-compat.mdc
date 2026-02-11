@@ -1,0 +1,15 @@
+---
+description: 让 Cursor 兼容 .claude 项目规则和 @.claude 语法
+alwaysApply: true
+---
+
+# .claude 兼容规则
+
+- 当项目中存在 `.claude/CLAUDE.md` 时，将其中内容视为本项目的权威规则与设计规范，优先于通用建议。
+- 当用户在对话中使用 `@.claude`（或类似提示）时，理解为“按 `.claude/CLAUDE.md` 里的规则来做”，不要求用户重复这些规则。
+- 进行 UI 相关实现或重构时，默认遵循 `.claude/CLAUDE.md` 中对组件库和风格的所有强制要求：
+  - 使用 `@/components/ui` 中提供的组件，而不是原生 HTML 按钮、输入框等。
+  - 不推荐或引入额外的 UI 组件库（如 shadcn/ui、MUI、Ant Design 等），除非用户明确要求。
+- 当本助手的建议与 `.claude/CLAUDE.md` 出现冲突时，以 `.claude/CLAUDE.md` 为最高优先级。
+- 如需扩展规则，优先参考 `.claude/CLAUDE.md` 中既有模式和设计风格进行演化，而不是从零另起体系。
+

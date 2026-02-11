@@ -1,395 +1,249 @@
 'use client';
 
-import { useState } from 'react';
 import {
+  Badge,
   Button,
-  Input,
-  Textarea,
   Card,
-  CardHeader,
   CardBody,
   CardFooter,
-  Badge,
-  ToastProvider,
-  useToast,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
+  CardHeader,
   Tabs,
+  TabsContent,
   TabsList,
   TabsTrigger,
-  TabsContent,
-  Dropdown,
-  DropdownItem,
-  DropdownSeparator,
-  DropdownLabel,
+  ToastProvider,
+  useToast,
 } from '@/components/ui';
+import postsData from './data.json';
 
-function ComponentShowcase() {
+type ForumCategory = '深度避雷' | '极致省钱' | '情绪求助';
+
+type EngagementMetrics = {
+  likes: number;
+  saves: number;
+};
+
+type Comment = {
+  user: string;
+  content: string;
+  createdAt: string;
+};
+
+type ForumPost = {
+  id: string;
+  title: string;
+  description: string;
+  category: ForumCategory;
+  topic: string;
+  tags: string[];
+  engagement: EngagementMetrics;
+  comments: Comment[];
+};
+
+const posts = postsData as ForumPost[];
+
+const CATEGORY_LABELS: { value: ForumCategory | '全部'; badgeVariant: 'primary' | 'secondary' | 'info' }[] = [
+  { value: '全部', badgeVariant: 'info' },
+  { value: '深度避雷', badgeVariant: 'primary' },
+  { value: '极致省钱', badgeVariant: 'secondary' },
+  { value: '情绪求助', badgeVariant: 'info' },
+];
+
+function formatNumber(num: number) {
+  if (num >= 10000) {
+    return `${(num / 10000).toFixed(1).replace(/\.0$/, '')}w`;
+  }
+  if (num >= 1000) {
+    return `${(num / 1000).toFixed(1).replace(/\.0$/, '')}k`;
+  }
+  return String(num);
+}
+
+function ForumCard({ post }: { post: ForumPost }) {
   const { addToast } = useToast();
-  const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto space-y-12">
-        {/* Header */}
-        <div className="text-center space-y-6 animate-bounce-in">
-          <h1 className="text-6xl md:text-7xl font-black uppercase transform -rotate-2 leading-tight">
-            <span className="inline-block bg-[var(--primary)] text-white px-6 py-3 rounded-[var(--radius-lg)] border-[var(--border-width)] border-[var(--foreground)] shadow-[var(--shadow-lg)] transform rotate-2">
-              UI Library
+    <Card hover bordered shadowed padding="lg" className="flex flex-col h-full animate-slide-up">
+      <CardHeader
+        title={post.title}
+        subtitle={post.topic}
+        action={
+          <Badge variant="primary" size="sm">
+            {post.category}
+          </Badge>
+        }
+      />
+      <CardBody>
+        <p className="text-[var(--card-foreground)] font-semibold text-sm leading-relaxed whitespace-pre-line">
+          {post.description}
+        </p>
+
+        {post.tags.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {post.tags.map((tag) => (
+              <Badge key={tag} variant="secondary" size="sm" rounded>
+                #{tag}
+              </Badge>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-5 flex items-center justify-between text-xs font-black uppercase tracking-wide text-[var(--neutral-600)]">
+          <div className="flex items-center gap-4">
+            <span>赞 {formatNumber(post.engagement.likes)}</span>
+            <span>收藏 {formatNumber(post.engagement.saves)}</span>
+          </div>
+          <span className="text-[var(--neutral-500)]">评论 {post.comments.length}</span>
+        </div>
+      </CardBody>
+      <CardFooter className="flex flex-col items-stretch gap-3 pt-4 border-t border-dashed border-[var(--neutral-200)]">
+        <div className="space-y-2">
+          {post.comments.slice(0, 3).map((comment) => (
+            <div key={`${post.id}-${comment.user}-${comment.createdAt}`} className="text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-black uppercase tracking-wide text-[var(--neutral-700)]">
+                  {comment.user}
+                </span>
+                <span className="text-[var(--neutral-500)] font-semibold">{comment.createdAt}</span>
+              </div>
+              <p className="text-[var(--neutral-800)] font-semibold mt-1">{comment.content}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-center justify-between pt-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() =>
+              addToast({
+                title: 'YO! 已收藏 💾',
+                description: '这篇经验被你收入“避坑宝典”啦！',
+                status: 'success',
+              })
+            }
+          >
+            想试但先收藏
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() =>
+              addToast({
+                title: '写点真心话 📝',
+                description: '你的一条评论，也许刚好救到同样迷茫的人。',
+                status: 'info',
+              })
+            }
+          >
+            我也想说两句
+          </Button>
+        </div>
+      </CardFooter>
+    </Card>
+  );
+}
+
+function ForumPage() {
+  const total = posts.length;
+  const byCategory = (category: ForumCategory) =>
+    posts.filter((post) => post.category === category);
+
+  return (
+    <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-10">
+      <div className="max-w-6xl mx-auto space-y-10">
+        <header className="space-y-6 animate-bounce-in">
+          <h1 className="text-5xl md:text-6xl font-black uppercase leading-tight graffiti-outline">
+            <span className="inline-block bg-[var(--primary)] text-[var(--on-primary)] px-5 py-2 rounded-[var(--radius-lg)] border-[var(--border-width-thick)] border-[var(--border)] shadow-[var(--shadow-xl)] transform -rotate-2">
+              生活雷达站
             </span>
             <br />
-            <span className="inline-block bg-[var(--secondary)] text-[var(--foreground)] px-6 py-3 rounded-[var(--radius-lg)] border-[var(--border-width)] border-[var(--foreground)] shadow-[var(--shadow-lg)] transform -rotate-1 mt-4">
-              Graffiti Style
+            <span className="inline-block bg-[var(--secondary)] text-[var(--on-secondary)] px-4 py-2 mt-3 rounded-[var(--radius-lg)] border-[var(--border-width)] border-[var(--border)] shadow-[var(--shadow-lg)] transform rotate-1">
+              仿小红书 · 城市打工人实录
             </span>
           </h1>
-          <p className="text-2xl font-bold text-[var(--foreground)] transform rotate-1">
-            后现代主义 × 涂鸦艺术 × React 组件
+          <p className="max-w-3xl text-[var(--neutral-900)] font-bold text-base md:text-lg transform -rotate-1">
+            这里不卖梦想，只说<strong>真实体验</strong>。深度避雷、极致省钱、情绪求助，全部来自 25-35 岁城市打工人的生活实验，
+            方便你、也方便商业分析爬虫，抓住每一个细小但致命的痛点。
           </p>
-          <div className="flex gap-3 justify-center flex-wrap">
-            <Badge variant="primary" size="lg">TypeScript</Badge>
-            <Badge variant="secondary" size="lg">Tailwind CSS</Badge>
-            <Badge variant="success" size="lg" dot>
-              暗色模式
+          <div className="flex flex-wrap items-center gap-3">
+            <Badge variant="primary" size="lg" dot>
+              共 {total} 篇真人故事
             </Badge>
-            <Badge variant="warning" size="lg">
-              街头风格
+            <Badge variant="secondary" size="lg">
+              深度避雷 {byCategory('深度避雷').length}
+            </Badge>
+            <Badge variant="secondary" size="lg">
+              极致省钱 {byCategory('极致省钱').length}
+            </Badge>
+            <Badge variant="info" size="lg">
+              情绪求助 {byCategory('情绪求助').length}
             </Badge>
           </div>
-        </div>
+        </header>
 
-        {/* Buttons Section */}
-        <Card hover>
-          <CardHeader title="Buttons" subtitle="爆炸性的按钮组件 💥" />
+        <Card hover bordered shadowed>
+          <CardHeader
+            title="话题导航"
+            subtitle="按类型刷贴，更快锁定你关心的生活场景 🔍"
+          />
           <CardBody>
-            <div className="space-y-6">
-              {/* Variants */}
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-[var(--neutral-500)] uppercase">
-                  Variants
-                </h3>
-                <div className="flex flex-wrap gap-3">
-                  <Button variant="primary">Primary</Button>
-                  <Button variant="secondary">Secondary</Button>
-                  <Button variant="outline">Outline</Button>
-                  <Button variant="ghost">Ghost</Button>
-                  <Button variant="danger">Danger</Button>
-                </div>
-              </div>
-
-              {/* Sizes */}
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-[var(--neutral-500)] uppercase">
-                  Sizes
-                </h3>
-                <div className="flex flex-wrap items-center gap-3">
-                  <Button size="sm">Small</Button>
-                  <Button size="md">Medium</Button>
-                  <Button size="lg">Large</Button>
-                  <Button size="xl">Extra Large</Button>
-                </div>
-              </div>
-
-              {/* States */}
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-[var(--neutral-500)] uppercase">
-                  States
-                </h3>
-                <div className="flex flex-wrap gap-3">
-                  <Button loading>Loading</Button>
-                  <Button disabled>Disabled</Button>
-                  <Button
-                    leftIcon={
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        className="w-5 h-5"
-                      >
-                        <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-                      </svg>
-                    }
-                  >
-                    With Icon
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </CardBody>
-        </Card>
-
-        {/* Inputs Section */}
-        <Card hover>
-          <CardHeader title="Inputs" subtitle="输入框，但更酷 ✨" />
-          <CardBody>
-            <div className="space-y-4">
-              <Input
-                label="Username"
-                placeholder="Enter your username"
-                hint="Choose a unique username"
-              />
-              <Input
-                label="Email"
-                type="email"
-                placeholder="your@email.com"
-                status="success"
-                leftIcon={
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    className="w-5 h-5"
-                  >
-                    <path d="M3 4a2 2 0 00-2 2v1.161l8.441 4.221a1.25 1.25 0 001.118 0L19 7.162V6a2 2 0 00-2-2H3z" />
-                    <path d="M19 8.839l-7.77 3.885a2.75 2.75 0 01-2.46 0L1 8.839V14a2 2 0 002 2h14a2 2 0 002-2V8.839z" />
-                  </svg>
-                }
-              />
-              <Input
-                label="Password"
-                type="password"
-                placeholder="Enter password"
-                error="Password must be at least 8 characters"
-              />
-              <Textarea
-                label="Description"
-                placeholder="Write a description..."
-                hint="Maximum 500 characters"
-                rows={4}
-              />
-            </div>
-          </CardBody>
-        </Card>
-
-        {/* Badges Section */}
-        <Card hover>
-          <CardHeader title="Badges" subtitle="标签也能很街头 🏷️" />
-          <CardBody>
-            <div className="space-y-4">
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="default">Default</Badge>
-                <Badge variant="primary">Primary</Badge>
-                <Badge variant="secondary">Secondary</Badge>
-                <Badge variant="success">Success</Badge>
-                <Badge variant="warning">Warning</Badge>
-                <Badge variant="error">Error</Badge>
-                <Badge variant="info">Info</Badge>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="primary" rounded>
-                  Rounded
-                </Badge>
-                <Badge variant="success" dot>
-                  With Dot
-                </Badge>
-                <Badge variant="warning" removable onRemove={() => console.log('Removed')}>
-                  Removable
-                </Badge>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <Badge size="sm">Small</Badge>
-                <Badge size="md">Medium</Badge>
-                <Badge size="lg">Large</Badge>
-              </div>
-            </div>
-          </CardBody>
-        </Card>
-
-        {/* Cards Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card hover bordered shadowed>
-            <CardHeader title="Basic Card" />
-            <CardBody>
-              <p className="text-[var(--neutral-600)] font-semibold">
-                This card has attitude! 😎
-              </p>
-            </CardBody>
-          </Card>
-
-          <Card hover bordered shadowed>
-            <CardHeader
-              title="With Actions"
-              action={
-                <Button size="sm" variant="secondary">
-                  Edit ✏️
-                </Button>
-              }
-            />
-            <CardBody>
-              <p className="text-[var(--neutral-600)] font-semibold">Card with header actions.</p>
-            </CardBody>
-            <CardFooter>
-              <Button size="sm" variant="outline">
-                Cancel
-              </Button>
-              <Button size="sm">Save</Button>
-            </CardFooter>
-          </Card>
-
-          <Card hover padding="lg" bordered shadowed>
-            <CardBody>
-              <h3 className="text-lg font-extrabold mb-2 uppercase">Large Padding</h3>
-              <p className="text-[var(--neutral-600)] font-semibold">Extra room to breathe! 🌬️</p>
-            </CardBody>
-          </Card>
-        </div>
-
-        {/* Tabs Section */}
-        <Card hover>
-          <CardHeader title="Tabs" subtitle="切换，但更有风格 🔥" />
-          <CardBody>
-            <Tabs defaultValue="tab1">
+            <Tabs defaultValue="全部" variant="pills">
               <TabsList>
-                <TabsTrigger value="tab1">Overview</TabsTrigger>
-                <TabsTrigger value="tab2">Analytics</TabsTrigger>
-                <TabsTrigger value="tab3">Settings</TabsTrigger>
+                {CATEGORY_LABELS.map((item) => (
+                  <TabsTrigger key={item.value} value={item.value}>
+                    {item.value === '全部' ? '全部笔记' : item.value}
+                  </TabsTrigger>
+                ))}
               </TabsList>
-              <TabsContent value="tab1">
-                <p className="text-[var(--neutral-600)] font-semibold text-lg">Overview content - where the magic happens! ✨</p>
+
+              <TabsContent value="全部">
+                <section
+                  aria-label="全部帖子"
+                  className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                >
+                  {posts.map((post) => (
+                    <ForumCard key={post.id} post={post} />
+                  ))}
+                </section>
               </TabsContent>
-              <TabsContent value="tab2">
-                <p className="text-[var(--neutral-600)] font-semibold text-lg">Analytics content - check out these stats! 📊</p>
+
+              <TabsContent value="深度避雷">
+                <section
+                  aria-label="深度避雷类帖子"
+                  className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                >
+                  {byCategory('深度避雷').map((post) => (
+                    <ForumCard key={post.id} post={post} />
+                  ))}
+                </section>
               </TabsContent>
-              <TabsContent value="tab3">
-                <p className="text-[var(--neutral-600)] font-semibold text-lg">Settings content - tweak it your way! ⚙️</p>
+
+              <TabsContent value="极致省钱">
+                <section
+                  aria-label="极致省钱类帖子"
+                  className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                >
+                  {byCategory('极致省钱').map((post) => (
+                    <ForumCard key={post.id} post={post} />
+                  ))}
+                </section>
+              </TabsContent>
+
+              <TabsContent value="情绪求助">
+                <section
+                  aria-label="情绪求助类帖子"
+                  className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                >
+                  {byCategory('情绪求助').map((post) => (
+                    <ForumCard key={post.id} post={post} />
+                  ))}
+                </section>
               </TabsContent>
             </Tabs>
-
-            <div className="mt-8">
-              <h4 className="text-sm font-black mb-4 uppercase tracking-wide">Pills Variant 💊</h4>
-              <Tabs defaultValue="pill1" variant="pills">
-                <TabsList>
-                  <TabsTrigger value="pill1">Home</TabsTrigger>
-                  <TabsTrigger value="pill2">Profile</TabsTrigger>
-                  <TabsTrigger value="pill3">Messages</TabsTrigger>
-                </TabsList>
-                <TabsContent value="pill1">
-                  <p className="font-semibold">Home sweet home! 🏠</p>
-                </TabsContent>
-                <TabsContent value="pill2">
-                  <p className="font-semibold">Your profile looks dope! 😎</p>
-                </TabsContent>
-                <TabsContent value="pill3">
-                  <p className="font-semibold">You've got mail! 📬</p>
-                </TabsContent>
-              </Tabs>
-            </div>
-          </CardBody>
-        </Card>
-
-        {/* Interactive Components */}
-        <Card hover>
-          <CardHeader title="Interactive" subtitle="模态框、Toast 和下拉菜单 🎪" />
-          <CardBody>
-            <div className="flex flex-wrap gap-4">
-              {/* Modal Trigger */}
-              <Button onClick={() => setModalOpen(true)}>Open Modal</Button>
-
-              {/* Toast Triggers */}
-              <Button
-                variant="secondary"
-                onClick={() =>
-                  addToast({
-                    title: 'Boom! Success! 💥',
-                    description: 'Your changes are locked in!',
-                    status: 'success',
-                  })
-                }
-              >
-                Success Toast
-              </Button>
-
-              <Button
-                variant="outline"
-                onClick={() =>
-                  addToast({
-                    title: 'Hold Up! ⚠️',
-                    description: 'Better check that input again.',
-                    status: 'warning',
-                  })
-                }
-              >
-                Warning Toast
-              </Button>
-
-              <Button
-                variant="danger"
-                onClick={() =>
-                  addToast({
-                    title: 'Uh Oh! 💀',
-                    description: 'Something went sideways.',
-                    status: 'error',
-                  })
-                }
-              >
-                Error Toast
-              </Button>
-
-              {/* Dropdown */}
-              <Dropdown
-                trigger={
-                  <Button variant="ghost">
-                    More Options
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </Button>
-                }
-              >
-                <DropdownLabel>Actions</DropdownLabel>
-                <DropdownItem
-                  icon={
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-                    </svg>
-                  }
-                  onClick={() => console.log('Create new')}
-                >
-                  Create New
-                </DropdownItem>
-                <DropdownItem onClick={() => console.log('Edit')}>Edit</DropdownItem>
-                <DropdownItem onClick={() => console.log('Duplicate')}>Duplicate</DropdownItem>
-                <DropdownSeparator />
-                <DropdownItem destructive onClick={() => console.log('Delete')}>
-                  Delete
-                </DropdownItem>
-              </Dropdown>
-            </div>
           </CardBody>
         </Card>
       </div>
-
-      {/* Modal Example */}
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} size="lg">
-        <ModalHeader title="Yo! Modal 👋" />
-        <ModalBody>
-          <p className="text-[var(--neutral-600)] mb-6 font-semibold text-lg">
-            This modal is straight fire! 🔥 It can contain anything you want - forms, images, or whatever else floats your boat.
-          </p>
-          <Input label="Your Name" placeholder="What should we call you?" fullWidth />
-        </ModalBody>
-        <ModalFooter>
-          <Button variant="outline" onClick={() => setModalOpen(false)}>
-            Nah, Cancel
-          </Button>
-          <Button onClick={() => setModalOpen(false)}>Let's Go! 🚀</Button>
-        </ModalFooter>
-      </Modal>
     </div>
   );
 }
@@ -397,7 +251,8 @@ function ComponentShowcase() {
 export default function Home() {
   return (
     <ToastProvider>
-      <ComponentShowcase />
+      <ForumPage />
     </ToastProvider>
   );
 }
+
