@@ -1,0 +1,5 @@
+[
+  { "id": "m1", "user": "增长-A", "text": "建议在首页加一条限时活动 banner，数据可以写进 data.json 的 home.header", "time": 1700000000000 },
+  { "id": "m2", "user": "增长-B", "text": "聊天室可以预置几条欢迎语，我往 data/chat-mock.json 里加", "time": 1700000001000 },
+  { "id": "m3", "user": "运营", "text": "博客 mock 还没建，先加 data/blog-mock.json 吧", "time": 1700000002000 }
+]

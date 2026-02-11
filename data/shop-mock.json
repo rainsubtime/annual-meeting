@@ -1,0 +1,5 @@
+{
+  "products": [
+    { "id": "p1", "name": "示例商品", "price": 99, "description": "电商 mock 商品，可由增长 agent 修改 data/shop-mock.json" }
+  ]
+}
